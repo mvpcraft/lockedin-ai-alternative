@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self';" />
+  <title>Interview Copilot</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Custom draggable title bar (frameless window) -->
+  <header class="titlebar">
+    <div class="brand">
+      <span class="dot"></span>
+      <span>Interview Copilot</span>
+    </div>
+    <nav class="tabs">
+      <button class="tab active" data-view="live">Live</button>
+      <button class="tab" data-view="setup">Setup</button>
+    </nav>
+    <div class="winbtns">
+      <button id="btn-min" title="Minimize">—</button>
+      <button id="btn-close" title="Close">✕</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ LIVE VIEW ============ -->
+    <section id="view-live" class="view active">
+      <div class="toolbar">
+        <button id="btn-listen" class="primary">🎙 Start listening</button>
+        <select id="audio-source" class="src" title="What to listen to">
+          <option value="system">🔊 Meeting audio (them)</option>
+          <option value="mic">🎤 Microphone (you)</option>
+        </select>
+      </div>
+
+      <div class="toggles">
+        <label class="switch" title="Band-pass + gate to strip echo/reverb/background"><input type="checkbox" id="tg-clean" checked /> Reduce echo/noise</label>
+        <label class="switch"><input type="checkbox" id="tg-auto" /> Auto-answer</label>
+        <label class="switch"><input type="checkbox" id="tg-aot" /> Always on top</label>
+        <label class="switch"><input type="checkbox" id="tg-stealth" /> Hide from screen share</label>
+        <span class="hint">Ctrl+\</span>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <span>Heard / Question</span>
+          <button id="btn-clear-q" class="link">clear</button>
+        </div>
+        <textarea id="transcript" placeholder="Speech appears here automatically, or paste/type the interview question…"></textarea>
+        <div class="row">
+          <button id="btn-ask" class="primary wide">⚡ Get answer</button>
+          <button id="btn-stop" class="ghost" disabled>Stop</button>
+        </div>
+      </div>
+
+      <div class="panel grow">
+        <div class="panel-head">
+          <span>Answer</span>
+          <span id="status" class="status"></span>
+        </div>
+        <div id="answer" class="answer"></div>
+      </div>
+    </section>
+
+    <!-- ============ SETUP VIEW ============ -->
+    <section id="view-setup" class="view">
+      <div class="field">
+        <label>OpenAI API key</label>
+        <input type="password" id="f-apiKey" placeholder="sk-..." autocomplete="off" />
+        <small id="apiKey-hint">Stored locally on this machine only.</small>
+      </div>
+
+      <div class="field">
+        <label>Model</label>
+        <select id="f-model">
+          <option value="gpt-4o-mini">GPT-4o mini (fastest — recommended)</option>
+          <option value="gpt-4o">GPT-4o (smarter, a bit slower)</option>
+          <option value="gpt-4.1-mini">GPT-4.1 mini (fast)</option>
+          <option value="gpt-4.1">GPT-4.1 (smartest)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Job title</label>
+        <input type="text" id="f-jobTitle" placeholder="e.g. Senior Frontend Engineer" />
+      </div>
+
+      <div class="field">
+        <label>Company (optional)</label>
+        <input type="text" id="f-company" placeholder="e.g. Acme Corp" />
+      </div>
+
+      <div class="field">
+        <label>Note for AI</label>
+        <textarea id="f-note" rows="2" placeholder="e.g. Keep answers under 45s, sound confident, emphasize my React experience."></textarea>
+      </div>
+
+      <div class="field">
+        <label>Job description</label>
+        <textarea id="f-jobDescription" rows="4" placeholder="Paste the job description here…"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Resume (PDF)</label>
+        <div class="row">
+          <button id="btn-pick-resume" class="ghost">📄 Choose PDF…</button>
+          <span id="resume-name" class="resume-name">No file selected</span>
+        </div>
+        <textarea id="f-resumeText" rows="4" placeholder="Extracted resume text appears here (editable)…"></textarea>
+      </div>
+
+      <div class="row">
+        <button id="btn-save" class="primary wide">Save</button>
+        <span id="save-status" class="status"></span>
+      </div>
+    </section>
+  </main>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

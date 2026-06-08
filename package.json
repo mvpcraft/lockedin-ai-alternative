@@ -1,0 +1,37 @@
+{
+  "name": "interview-copilot",
+  "version": "0.1.0",
+  "description": "Real-time AI interview assistant (a LockedIn AI alternative) powered by the OpenAI API.",
+  "main": "electron/main.js",
+  "author": "you & friend",
+  "license": "MIT",
+  "scripts": {
+    "start": "node scripts/start.js",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "^31.3.1",
+    "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "pdf-parse": "^1.1.1"
+  },
+  "build": {
+    "appId": "com.you.interviewcopilot",
+    "productName": "Interview Copilot",
+    "files": [
+      "electron/**/*",
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    }
+  }
+}
