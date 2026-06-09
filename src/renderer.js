@@ -11,13 +11,9 @@ let captureStream = null;
 let mediaRecorder = null;
 let autoAnswer = false;
 let autoTimer = null;
-const WINDOW_MS = 5000; // length of each audio window sent for transcription
+const WINDOW_MS = 2000; // length of each audio window sent for transcription (lower = faster, less context)
 const MIME = 'audio/webm;codecs=opus';
 
-// Audio processing + voice-activity detection.
-//  - We never send silent windows to Whisper (silence -> hallucinations).
-//  - We clean the audio (band-pass + compressor + noise gate) to strip
-//    reverberation/echo tails and background so only the direct speech remains.
 let audioCtx = null;
 let analyser = null;
 let meterTimer = null;
@@ -52,20 +48,10 @@ $('btn-close').addEventListener('click', () => window.api.close());
 ----------------------------------------------------------------- */
 async function loadConfig() {
   config = await window.api.getConfig();
-  $('f-apiKey').value = config.apiKey || '';
   $('f-model').value = config.model || 'gpt-4o-mini';
 
-  // When the key/model come from .env, lock the fields and explain why.
-  const keyInput = $('f-apiKey');
-  const keyHint = $('apiKey-hint');
-  if (config.apiKeyFromEnv) {
-    keyInput.disabled = true;
-    keyInput.value = '•••••• loaded from .env';
-    keyHint.textContent = 'Loaded from .env (OPENAI_API_KEY). Edit the .env file to change it.';
-  } else {
-    keyInput.disabled = false;
-    keyHint.textContent = 'Stored locally on this machine only. Tip: set OPENAI_API_KEY in a .env file instead.';
-  }
+  // The API key always comes from the bundled .env (OPENAI_API_KEY) — there is
+  // no key field in the UI.
   if (config.modelFromEnv) {
     $('f-model').disabled = true;
   }
@@ -89,8 +75,6 @@ $('btn-save').addEventListener('click', async () => {
     jobDescription: $('f-jobDescription').value.trim(),
     resumeText: $('f-resumeText').value.trim(),
   };
-  // Only save a manually-typed API key (ignored when .env provides one).
-  if (!config.apiKeyFromEnv) patch.apiKey = $('f-apiKey').value.trim();
   await window.api.setConfig(patch);
   config = await window.api.getConfig();
   const s = $('save-status');
@@ -292,7 +276,7 @@ function scheduleAutoAnswer() {
 }
 
 async function startCapture() {
-  const source = $('audio-source').value;
+  const source = 'system'; // always listen to meeting audio (the other person), never the mic
   try {
     captureStream = await getStream(source);
   } catch (e) {
@@ -381,7 +365,7 @@ function setStatus(text, cls) {
 function ask() {
   const question = $('transcript').value.trim();
   if (!question) { setStatus('Nothing to answer yet', 'err'); return; }
-  if (!config.apiKey) { setStatus('Set your API key in Setup', 'err'); return; }
+  if (!config.apiKey) { setStatus('No API key — set OPENAI_API_KEY in the .env file', 'err'); return; }
 
   answerBuffer = '';
   $('answer').innerHTML = '<span class="cursor">&nbsp;</span>';

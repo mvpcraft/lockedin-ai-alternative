@@ -4,8 +4,13 @@ const { app, BrowserWindow, ipcMain, dialog, globalShortcut, desktopCapturer, se
 const path = require('path');
 const fs = require('fs');
 
-// Load .env from the project root (and from the app dir when packaged).
-require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+// Load .env. In dev it sits at the project root; when packaged we ship it as an
+// "extraResource" so it lands in the app's resources folder (outside the asar),
+// where it stays editable without rebuilding.
+const ENV_PATH = app.isPackaged
+  ? path.join(process.resourcesPath, '.env')
+  : path.join(__dirname, '..', '.env');
+require('dotenv').config({ path: ENV_PATH });
 
 // Keep the app fully alive while it's in the background / unfocused, so audio
 // capture and the live transcript keep updating even when the user is clicking

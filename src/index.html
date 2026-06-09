@@ -29,10 +29,7 @@
     <section id="view-live" class="view active">
       <div class="toolbar">
         <button id="btn-listen" class="primary">🎙 Start listening</button>
-        <select id="audio-source" class="src" title="What to listen to">
-          <option value="system">🔊 Meeting audio (them)</option>
-          <option value="mic">🎤 Microphone (you)</option>
-        </select>
+        <span class="src-label" title="Listens to the meeting audio — the other person — not your microphone">🔊 Meeting audio (them)</span>
       </div>
 
       <div class="toggles">
@@ -66,12 +63,6 @@
 
     <!-- ============ SETUP VIEW ============ -->
     <section id="view-setup" class="view">
-      <div class="field">
-        <label>OpenAI API key</label>
-        <input type="password" id="f-apiKey" placeholder="sk-..." autocomplete="off" />
-        <small id="apiKey-hint">Stored locally on this machine only.</small>
-      </div>
-
       <div class="field">
         <label>Model</label>
         <select id="f-model">
