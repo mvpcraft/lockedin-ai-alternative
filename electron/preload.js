@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld('api', {
   close: () => ipcRenderer.invoke('win:close'),
   setAlwaysOnTop: (v) => ipcRenderer.invoke('win:always-on-top', v),
   setStealth: (v) => ipcRenderer.invoke('win:stealth', v),
+  onStealthChanged: (cb) => ipcRenderer.on('stealth:changed', (_e, v) => cb(v)),
 
   // OpenAI (ChatGPT) streaming
   ask: (payload) => ipcRenderer.send('ai:ask', payload),

@@ -7,6 +7,37 @@ Single Electron desktop app. Nothing is sent anywhere except directly to the
 OpenAI API with your key. Config and resume text are stored locally on your
 machine only.
 
+## Overview
+
+Interview Copilot is a frameless desktop overlay that sits invisibly on top of your
+video call and feeds you answers in real time. It listens to the **interviewer's
+voice** through your computer's system audio, transcribes it with **OpenAI Whisper**,
+and streams back a short, ready-to-read answer from **ChatGPT** — all using your own
+API key, with nothing routed through any third-party server.
+
+**How it works:**
+
+1. **Listen** — the app captures system/loopback audio (what the interviewer says in
+   Zoom/Teams/Meet) in ~5-second windows. A loudness gate and phrase filter drop
+   silence and Whisper hallucinations so only real speech is transcribed.
+2. **Transcribe** — each window is sent to Whisper and appended to the live transcript.
+3. **Answer** — ChatGPT generates a reply tailored by your **resume, job title,
+   company, and job description**, written as **max 3 short sentences in easy English**,
+   first-person, ready to read aloud. Trigger it with **⚡ Get answer** or let
+   **Auto-answer** fire automatically after each pause in speech.
+
+**Designed to stay out of the way:** the overlay is hidden from screen sharing and
+recordings, has no taskbar button, stays always-on-top, and is summoned with a global
+hotkey or the system tray icon.
+
+**Built with:** Electron (main + renderer, no bundler), plain HTML/CSS/JS, and direct
+REST calls to the OpenAI API (chat completions with SSE streaming + audio
+transcriptions) — no AI SDK dependency. PDF resumes are parsed locally with
+`pdf-parse`.
+
+> ⚠️ For practice and prep. Using AI assistance during a real interview may violate the
+> employer's or platform's rules — use responsibly.
+
 ## Features
 
 - **Setup**: job title, company, "note for AI", job description, and **resume PDF

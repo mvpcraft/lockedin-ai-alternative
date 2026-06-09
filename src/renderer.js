@@ -104,6 +104,8 @@ $('btn-pick-resume').addEventListener('click', async () => {
 ----------------------------------------------------------------- */
 $('tg-aot').addEventListener('change', (e) => window.api.setAlwaysOnTop(e.target.checked));
 $('tg-stealth').addEventListener('change', (e) => window.api.setStealth(e.target.checked));
+// Keep the checkbox in sync when stealth is toggled from the tray menu.
+window.api.onStealthChanged((v) => { $('tg-stealth').checked = !!v; });
 
 /* ----------------------------------------------------------------
    Live audio capture -> OpenAI transcription (no typing needed).

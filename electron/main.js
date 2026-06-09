@@ -94,6 +94,14 @@ function applyAlwaysOnTop(value) {
   writeConfig({ alwaysOnTop: !!value });
 }
 
+function applyStealth(value) {
+  if (!mainWindow) return;
+  mainWindow.setContentProtection(!!value); // hide the window from screen-share/recording
+  writeConfig({ stealth: !!value });
+  // Keep the in-app toggle in sync when changed from the tray.
+  mainWindow.webContents.send('stealth:changed', !!value);
+}
+
 function createTray() {
   if (tray) return;
   let img = nativeImage.createFromPath(ICON_PATH());
@@ -109,6 +117,12 @@ function createTray() {
       type: 'checkbox',
       checked: !!readConfig().alwaysOnTop,
       click: (item) => applyAlwaysOnTop(item.checked),
+    },
+    {
+      label: 'Hide from screen share',
+      type: 'checkbox',
+      checked: !!readConfig().stealth,
+      click: (item) => applyStealth(item.checked),
     },
     { type: 'separator' },
     { label: 'Quit', click: () => app.quit() },
@@ -214,11 +228,7 @@ ipcMain.handle('win:close', () => mainWindow && mainWindow.close());
 
 ipcMain.handle('win:always-on-top', (_e, value) => applyAlwaysOnTop(value));
 
-ipcMain.handle('win:stealth', (_e, value) => {
-  if (!mainWindow) return;
-  mainWindow.setContentProtection(!!value);
-  writeConfig({ stealth: !!value });
-});
+ipcMain.handle('win:stealth', (_e, value) => applyStealth(value));
 
 /* ---------------------- IPC: resume PDF ------------------ */
 
@@ -257,6 +267,10 @@ ipcMain.handle('ai:transcribe', async (_e, audioBytes) => {
     form.append('file', new Blob([buf], { type: 'audio/webm' }), 'audio.webm');
     form.append('model', envTranscribeModel() || 'whisper-1');
     form.append('response_format', 'json');
+    // This app is English-only: force Whisper to transcribe as English so it
+    // never auto-detects/translates into another language. Override via
+    // OPENAI_TRANSCRIBE_LANGUAGE in .env if ever needed.
+    form.append('language', (process.env.OPENAI_TRANSCRIBE_LANGUAGE || 'en').trim());
 
     const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
       method: 'POST',
