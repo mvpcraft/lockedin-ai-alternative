@@ -1,6 +1,6 @@
 {
   "name": "interview-copilot",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Real-time AI interview assistant (a LockedIn AI alternative) powered by the OpenAI API.",
   "main": "electron/main.js",
   "author": "you & friend",
